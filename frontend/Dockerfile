@@ -1,14 +1,25 @@
-# Stage 1: Build
-FROM node:16 as build
+# Use official Node.js image as base
+FROM node:18
+
+# Set the working directory inside the container
 WORKDIR /app
-COPY package.json ./
+
+# Copy package.json and package-lock.json (if you have one)
+COPY package*.json ./
+
+# Install dependencies (only react-scripts and core React packages)
 RUN npm install
-COPY . ./
+
+# Copy the rest of the application
+COPY . .
+
+# Build the React app for production
 RUN npm run build
 
-# Stage 2: Serve
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 3000
-CMD ["nginx", "-g", "daemon off;"]
+# Serve the built app using a simple HTTP server
+RUN npm install -g serve
+CMD ["serve", "-s", "build"]
+
+# Expose the port the app will run on
+EXPOSE 5000
 

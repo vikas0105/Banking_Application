@@ -1,18 +1,28 @@
-import React from 'react';
-import AccountDetails from './components/AccountDetails';
-import Transactions from './components/Transactions';
-import Analytics from './components/Analytics';
+import React, { useState } from 'react';
+import Home from './components/Home';
+import About from './components/About';
 
-function App() {
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const handleNavigation = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div>
-      <h1>Banking App</h1>
-      <AccountDetails />
-      <Transactions />
-      <Analytics />
+      <nav>
+        <button onClick={() => handleNavigation('home')}>Home</button>
+        <button onClick={() => handleNavigation('about')}>About</button>
+      </nav>
+
+      <div>
+        {currentPage === 'home' && <Home />}
+        {currentPage === 'about' && <About />}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
 
