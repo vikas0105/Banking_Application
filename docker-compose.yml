@@ -1,9 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # API Gateway
+  # API Gateway service
   api-gateway:
-    build: ./api-gateway
+    build:
+      context: ./api-gateway
     ports:
       - "5000:5000"
     depends_on:
@@ -11,59 +12,46 @@ services:
       - account-service
       - transaction-service
       - analytics-service
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
 
   # Customer Service
   customer-service:
-    build: ./customer-service
+    build:
+      context: ./customer-service
     ports:
-      - "5002:5002"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+      - "5001:5000"
+    depends_on:
+      - account-service
 
   # Account Service
   account-service:
-    build: ./account-service
+    build:
+      context: ./account-service
     ports:
-      - "5003:5003"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+      - "5002:5000"
 
   # Transaction Service
   transaction-service:
-    build: ./transaction-service
+    build:
+      context: ./transaction-service
     ports:
-      - "5004:5004"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+      - "5003:5000"
 
   # Analytics Service
   analytics-service:
-    build: ./analytics-service
+    build:
+      context: ./analytics-service
     ports:
-      - "5006:5006"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+      - "5004:5000"
 
-  # Frontend (React app)
+  # Frontend React app (served by Nginx)
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     ports:
-      - "3000:3000"
+      - "8080:80"
     depends_on:
       - api-gateway
-    environment:
-      - REACT_APP_API_URL=http://api-gateway:5000
-    networks:
-      - banking-network
-
-networks:
-  banking-network:
-    driver: bridge
-
+      - customer-service
+      - account-service
+      - transaction-service
+      - analytics-service
